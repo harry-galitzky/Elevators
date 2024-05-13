@@ -1,0 +1,56 @@
+Class Diagram
+----------------------
+|      Building       |
+----------------------
+| - floors            |
+| - elevators         |
+----------------------
+| + constructor()     |
+| + addFloor()        |
+| + addElevator()     |
+----------------------
+
+----------------------
+|      Elevator       |
+----------------------
+| - currentFloor      |
+| - targetFloor       |
+| - status            |
+| - doorsOpen         |
+----------------------
+| + constructor()     |
+| + moveToFloor()     |
+| + openDoors()       |
+| + closeDoors()      |
+----------------------
+
+----------------------
+|       Floor         |
+----------------------
+| - floorNumber       |
+| - upButtonPressed   |
+| - downButtonPressed |
+----------------------
+| + constructor()     |
+| + pressUpButton()   |
+| + pressDownButton() |
+----------------------
+
+-----------------------------
+|    ElevatorController     |
+-----------------------------
+| - elevators               |
+| - requests                |
+-----------------------------
+| + constructor()           |
+| + requestElevator()       |
+| + step()                  |
+-----------------------------
+
+----------------------
+|        app         |
+----------------------
+| -                  |
+----------------------
+| + initialize()     |
+----------------------

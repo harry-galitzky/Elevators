@@ -1,0 +1,18 @@
+# Ignore directories that can be recreated with package managers
+node_modules/
+dist/
+out/
+build/
+
+# Ignore editor directories and files
+.vscode/
+*.sublime-workspace
+
+# Ignore log files and databases
+*.log
+*.sql
+*.sqlite
+
+# Ignore OS generated files
+.DS_Store
+Thumbs.db
