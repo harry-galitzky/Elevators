@@ -1,6 +1,7 @@
 import { Elevator } from "./Elevator";
 import { Floor } from "./Floor";
 import { ElevatorController } from "../controllers/ElevatorController";
+import { ElevatorFactory } from "../factories/ElevatorFactory";
 
 export class Building {
   private floors: Floor[];
@@ -15,7 +16,7 @@ export class Building {
 
     this.elevators = Array.from(
       { length: numberOfElevators },
-      (_, index: number) => new Elevator(index)
+      (_, index: number) => ElevatorFactory.createElevator(index)
     );
     this.elevatorController = new ElevatorController(
       this.elevators,
@@ -32,8 +33,7 @@ export class Building {
   }
 
   public AssociatingElevatorFloor(floorNumber: number): number {
-    const time = this.elevatorController.callElevatorToFloor(floorNumber);
-    return time;
+    return this.elevatorController.callElevatorToFloor(floorNumber);
   }
 
   public emptyLists(): boolean {
@@ -42,16 +42,6 @@ export class Building {
 
   public nextFloor(elevatorId: number): number {
     const elevator = this.elevators.find((e) => e.getId() === elevatorId);
-
-    if (elevator) {
-      const floor = elevator.moveToNextFloor();
-      if (floor != null) {
-        return floor;
-      } else {
-        return -1;
-      }
-    } else {
-      return -1;
-    }
+    return elevator ? elevator.moveToNextFloor() : -1;
   }
 }

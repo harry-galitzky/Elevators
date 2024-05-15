@@ -30,12 +30,6 @@ export class ElevatorController {
   }
 
   public NoWaiting(): boolean {
-    let empty: boolean = true;
-    this.elevators.forEach((elevator) => {
-      if (elevator.getNumberAreWaiting()) {
-        empty = false;
-      }
-    });
-    return empty;
+    return this.elevators.every((elevator) => elevator.getNumberAreWaiting() === 0);
   }
 }

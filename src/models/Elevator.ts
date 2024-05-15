@@ -1,30 +1,37 @@
+import { config } from "../config";
+
 export class Elevator {
+  private working: boolean = true;
+
   public elevatorId: number;
   private currentFloor: number = 1;
   private targetFloor: number = 1;
   public areWaiting: number[] = [];
-  public busy: number = 0;
+  private busy: boolean = false;
   public timer: number = 0;
-
   private intervalTimerId: number | null = null;
-  private intervalBusyId: number | null = null;
 
   constructor(elevatorId: number) {
     this.elevatorId = elevatorId;
   }
 
+  public activateDeactivate(): void {
+    this.working =!this.working;
+  }
+
+  public getIsWorking(): boolean {
+    return this.working;
+  }
+
   public moveToNextFloor(): number {
-    const nextFloor = this.areWaiting.shift() ?? null;
-    if (nextFloor === null) {
-      return -1;
+    const nextFloor = this.areWaiting.shift() ?? -1;
+    if (nextFloor !== -1) {
+      this.currentFloor = this.targetFloor;
+      this.targetFloor = nextFloor;
+      const time = Math.abs(this.currentFloor - this.targetFloor) * config.elevatorSpeed + 2;
+      this.busy = true;
+      this.startBusy(time);
     }
-    this.currentFloor = this.targetFloor;
-    this.targetFloor = nextFloor;
-
-    const addedTime = Math.abs(this.currentFloor - this.targetFloor) * 0.5 + 2;
-    this.busy = addedTime;
-    this.startBusy(this.busy);
-
     return this.targetFloor;
   }
 
@@ -41,11 +48,7 @@ export class Elevator {
   }
 
   public getLastWaiting(): number {
-    if (this.areWaiting.length) {
-      return this.areWaiting[this.areWaiting.length - 1];
-    } else {
-      return this.currentFloor;
-    }
+    return this.areWaiting.length ? this.areWaiting[this.areWaiting.length - 1] : this.currentFloor;
   }
 
   public getId(): number {
@@ -62,28 +65,17 @@ export class Elevator {
     return this.timer;
   }
 
-  public getBusy(): number {
+  public getBusy(): boolean {
     return this.busy;
   }
 
-  public startBusy(timer: number): void {
-    if (this.intervalBusyId !== null) {
-      clearInterval(this.intervalBusyId);
-    }
-    this.intervalBusyId = window.setInterval(() => {
-      if (this.busy > 0) {
-        this.busy -= 1;
-      } else {
-        this.busy = 0;
-        if (this.intervalBusyId !== null) {
-          clearInterval(this.intervalBusyId);
-          this.intervalBusyId = null;
-        }
-      }
-    }, 1000);
+  private startBusy(timer: number): void {
+    window.setTimeout(() => {
+      this.busy = false;
+    }, timer * 1000);
   }
 
-  public startTimer(): void {
+  private startTimer(): void {
     if (this.intervalTimerId !== null) {
       clearInterval(this.intervalTimerId);
     }
