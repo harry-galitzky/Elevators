@@ -42,14 +42,15 @@ mainBuilding.getElevators().forEach((elevator) => {
 let isWorking = false;
 
 function checkFloors(): void {
-  while (isWorking) {
-    if (mainBuilding.emptyLists()) {
-      isWorking = false;
-      return;
-    } else {
-      checkNextStop();
+  window.setInterval(() => {
+      if (mainBuilding.emptyLists()) {
+        isWorking = false;
+        return;
+      } else {
+        checkNextStop();
     }
-  }
+  }, 10)
+
 }
 
 function checkNextStop(): void {
@@ -57,6 +58,9 @@ function checkNextStop(): void {
     if (elevator.getNumberAreWaiting() > 0 && !elevator.getBusy()) {
       const distance = Math.abs(elevator.getCurrentFloor() - elevator.getNextFloor());
       moveToNextFloor(elevator.elevatorId, distance);
+    }
+    else{
+
     }
   });
 }
