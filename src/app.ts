@@ -15,6 +15,10 @@ buildingLine.className = "building";
 buildingContainer?.appendChild(buildingElevator);
 buildingContainer?.appendChild(buildingLine);
 
+const audio: HTMLAudioElement = document.createElement('audio');
+audio.src = '/sounds/ding.mp3';
+audio.controls = true;
+
 mainBuilding.getFloors().forEach((floor) => {
   const floorElement = document.createElement("div");
   floorElement.className = "floor";
@@ -43,14 +47,13 @@ let isWorking = false;
 
 function checkFloors(): void {
   window.setInterval(() => {
-      if (mainBuilding.emptyLists()) {
-        isWorking = false;
-        return;
-      } else {
-        checkNextStop();
+    if (mainBuilding.emptyLists()) {
+      isWorking = false;
+      return;
+    } else {
+      checkNextStop();
     }
-  }, 10)
-
+  }, 10);
 }
 
 function checkNextStop(): void {
@@ -58,9 +61,6 @@ function checkNextStop(): void {
     if (elevator.getNumberAreWaiting() > 0 && !elevator.getBusy()) {
       const distance = Math.abs(elevator.getCurrentFloor() - elevator.getNextFloor());
       moveToNextFloor(elevator.elevatorId, distance);
-    }
-    else{
-
     }
   });
 }
@@ -71,7 +71,12 @@ function moveToNextFloor(elevatorId: number, gap: number): void {
   const elevatorElement = document.getElementById(`elevator-${elevatorId}`);
   if (elevatorElement !== null) {
     elevatorElement.style.transform = `translateY(${(-targetFloor + 1) * config.floorHeight}px)`;
-    elevatorElement.style.transition = `transform ${gap * config.elevatorSpeed}s ease`;
+    const time = gap * config.elevatorSpeed;
+    elevatorElement.style.transition = `transform ${time}s ease`;
+    setTimeout(() => {
+      audio.currentTime = 0;
+      audio.play()
+    }, time * 1000);
   }
 }
 
