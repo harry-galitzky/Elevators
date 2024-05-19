@@ -1,4 +1,3 @@
-
 .floor {
   background-color: silver;
   background-image: linear-gradient(335deg, #b00 23px, transparent 23px),
@@ -134,7 +133,7 @@ html, body {
 
 #building-container {
   position: relative;
-  width: 700px;
+  width: auto;
   min-height: 100vh;
   height: auto;
   display: flex;

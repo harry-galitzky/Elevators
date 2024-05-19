@@ -6,15 +6,18 @@ export class Floor {
     this.floorNumber = floorNumber;
   }
 
+  // Returns the floor number
   public getNumber(): number {
     return this.floorNumber;
   }
 
-  public getButtonPressed(): boolean {
+  // Returns if the button is pressed
+  public isButtonPressed(): boolean {
     return this.buttonPressed;
   }
 
-  public elevatorArrived(): void {
-    
-}
+  // Toggles the state of the button
+  public toggleButtonState(): void {
+    this.buttonPressed = !this.buttonPressed;
+  }
 }

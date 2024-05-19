@@ -2,11 +2,10 @@ import { config } from "../config";
 
 export class Elevator {
   private working: boolean = true;
-
   public elevatorId: number;
   private currentFloor: number = 1;
   private targetFloor: number = 1;
-  public areWaiting: number[] = [];
+  public pendingRequests: number[] = [];
   private busy: boolean = false;
   public timer: number = 0;
   private intervalTimerId: number | null = null;
@@ -15,72 +14,91 @@ export class Elevator {
     this.elevatorId = elevatorId;
   }
 
+  // Activates or deactivates the elevator
   public activateDeactivate(): void {
-    this.working =!this.working;
+    this.working = !this.working;
   }
 
-  public getIsWorking(): boolean {
+  // Returns if the elevator is currently working
+  public isWorking(): boolean {
     return this.working;
   }
 
-  public moveToNextFloor(): number {
-    const nextFloor = this.areWaiting.shift() ?? -1;
+  // Processes the next request in the queue
+  public processNextRequest(): number {
+    const nextFloor = this.pendingRequests.shift() ?? -1;
     if (nextFloor !== -1) {
       this.currentFloor = this.targetFloor;
       this.targetFloor = nextFloor;
       const time = Math.abs(this.currentFloor - this.targetFloor) * config.elevatorSpeed + 2;
       this.busy = true;
-      this.startBusy(time);
+      this.startBusyTimer(time);
     }
     return this.targetFloor;
   }
 
+  // Returns the current floor the elevator is on
   public getCurrentFloor(): number {
     return this.targetFloor;
   }
 
-  public getNumberAreWaiting(): number {
-    return this.areWaiting.length;
+  // Returns the number of pending requests
+  public hasPendingRequests(): number {
+    return this.pendingRequests.length;
   }
 
-  public getNextFloor(): number {
-    return this.areWaiting[0];
+  // Returns the next requested floor
+  public getNextRequestFloor(): number {
+    return this.pendingRequests[0];
   }
 
-  public getLastWaiting(): number {
-    return this.areWaiting.length ? this.areWaiting[this.areWaiting.length - 1] : this.currentFloor;
+  // Returns the last requested floor
+  public getLastRequestFloor(): number {
+    return this.pendingRequests.length ? this.pendingRequests[this.pendingRequests.length - 1] : this.currentFloor;
   }
 
+  // Returns the elevator ID
   public getId(): number {
     return this.elevatorId;
   }
 
-  public addFloorToList(floor: number, addedTime: number): void {
+  // Adds a floor request to the queue
+  public addRequestToQueue(floor: number, addedTime: number): void {
     this.timer += addedTime;
-    this.areWaiting.push(floor);
-    this.startTimer();
+    this.pendingRequests.push(floor);
+    this.startRequestTimer();
   }
 
-  public getTimer(): number {
+  // Adds a floor request with a specific total time
+  public addRequest(floor: number, totalTime: number): void {
+    this.pendingRequests.push(floor);
+    this.timer = totalTime;
+  }
+
+  // Returns the current request timer
+  public getRequestTimer(): number {
     return this.timer;
   }
 
-  public getBusy(): boolean {
+  // Returns if the elevator is currently busy
+  public isBusy(): boolean {
     return this.busy;
   }
 
-  private startBusy(timer: number): void {
+  // Starts the busy timer for the elevator
+  private startBusyTimer(timer: number): void {
     window.setTimeout(() => {
       this.busy = false;
     }, timer * 1000);
   }
 
-  private startTimer(): void {
+  // Starts the request timer for the elevator
+  private startRequestTimer(): void {
     if (this.intervalTimerId !== null) {
       clearInterval(this.intervalTimerId);
     }
     this.intervalTimerId = window.setInterval(() => {
-      if (this.timer > 0) {
+      if (this.timer - 1 >= 0) {
         this.timer -= 1;
       } else {
         this.timer = 0;
