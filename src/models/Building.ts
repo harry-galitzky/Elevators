@@ -11,7 +11,7 @@ export class Building {
   constructor(numberOfFloors: number, numberOfElevators: number) {
     this.floors = Array.from({ length: numberOfFloors }, (_, index) => new Floor(numberOfFloors - index));
     this.elevators = Array.from({ length: numberOfElevators }, (_, index: number) => ElevatorFactory.createElevator(index));
-    this.elevatorController = new ElevatorController(this.elevators, this.floors);
+    this.elevatorController = new ElevatorController(this.elevators);
   }
 
   // Returns the list of floors in the building
@@ -24,10 +24,19 @@ export class Building {
     return this.elevators;
   }
 
-  // Associates an elevator to the requested floor
-  public associateElevatorToFloor(floorNumber: number): number {
-    return this.elevatorController.selectElevator(floorNumber);
+// Associates an elevator to the requested floor
+public associateElevatorToFloor(floorNumber: number): number {
+  const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
+  if (floor) {
+    if (!floor.isButtonPressed()) {
+      floor.toggleButtonState();
+      return this.elevatorController.selectElevator(floorNumber);
+    }
+  } else {
+    throw new Error(`Floor number ${floorNumber} not found`);
   }
+  return -1;
+}
 
   // Checks if all requests have been handled
   public areAllRequestsHandled(): boolean {
@@ -39,4 +48,12 @@ export class Building {
     const elevator = this.elevators.find((e) => e.getId() === elevatorId);
     return elevator ? elevator.processNextRequest() : -1;
   }
+
+  public releaseFloor(floorNumber: number) {
+    const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
+    if (floor) {
+        floor.toggleButtonState();
+    }
+  }
+  
 }

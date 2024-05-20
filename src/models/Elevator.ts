@@ -3,7 +3,6 @@ import { config } from "../config";
 export class Elevator {
   private working: boolean = true;
   public elevatorId: number;
-  private currentFloor: number = 1;
   private targetFloor: number = 1;
   public pendingRequests: number[] = [];
   private busy: boolean = false;
@@ -28,9 +27,8 @@ export class Elevator {
   public processNextRequest(): number {
     const nextFloor = this.pendingRequests.shift() ?? -1;
     if (nextFloor !== -1) {
-      this.currentFloor = this.targetFloor;
+      const time = Math.abs(nextFloor - this.targetFloor) * config.elevatorSpeed + 2;
       this.targetFloor = nextFloor;
-      const time = Math.abs(this.currentFloor - this.targetFloor) * config.elevatorSpeed + 2;
       this.busy = true;
       this.startBusyTimer(time);
     }
@@ -38,7 +36,7 @@ export class Elevator {
   }
 
   // Returns the current floor the elevator is on
-  public getCurrentFloor(): number {
+  public getTargetFloor(): number {
     return this.targetFloor;
   }
 
@@ -54,7 +52,7 @@ export class Elevator {
 
   // Returns the last requested floor
   public getLastRequestFloor(): number {
-    return this.pendingRequests.length ? this.pendingRequests[this.pendingRequests.length - 1] : this.currentFloor;
+    return this.pendingRequests.length ? this.pendingRequests[this.pendingRequests.length - 1] : this.targetFloor;
   }
 
   // Returns the elevator ID
@@ -64,7 +62,7 @@ export class Elevator {
 
   // Adds a floor request to the queue
   public addRequestToQueue(floor: number, addedTime: number): void {
-    this.timer += addedTime;
+    this.timer += (addedTime + 2);
     this.pendingRequests.push(floor);
     this.startRequestTimer();
   }

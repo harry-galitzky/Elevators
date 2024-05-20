@@ -12,6 +12,7 @@ build/
 *.log
 *.sql
 *.sqlite
+*.puml
 
 # Ignore OS generated files
 .DS_Store

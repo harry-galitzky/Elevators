@@ -1,14 +1,11 @@
 import { Elevator } from "../models/Elevator";
-import { Floor } from "../models/Floor";
 import { config } from "../config";
 
 export class ElevatorController {
   private elevators: Elevator[];
-  private floors: Floor[];
 
-  constructor(elevators: Elevator[], floors: Floor[]) {
+  constructor(elevators: Elevator[]) {
     this.elevators = elevators;
-    this.floors = floors;
   }
 
   // Selects the optimal elevator for a floor request

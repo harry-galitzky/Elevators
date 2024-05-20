@@ -110,7 +110,7 @@ class ElevatorApp {
   private processNextStop(): void {
     this.building.getElevators().forEach((elevator) => {
       if (elevator.hasPendingRequests() && !elevator.isBusy()) {
-        const distance = Math.abs(elevator.getCurrentFloor() - elevator.getNextRequestFloor());
+        const distance = Math.abs(elevator.getTargetFloor() - elevator.getNextRequestFloor());
         this.moveElevatorToNextFloor(elevator.elevatorId, distance);
       }
     });
@@ -129,6 +129,7 @@ class ElevatorApp {
       setTimeout(() => {
         this.dingSound.currentTime = 0;
         this.dingSound.play();
+        this.building.releaseFloor(targetFloor)
         if (floorButton) {
           (floorButton as HTMLElement).style.color = 'hsla(0, 0%, 20%, 1)';
         }
