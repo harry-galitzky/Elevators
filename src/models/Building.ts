@@ -28,7 +28,7 @@ export class Building {
 public associateElevatorToFloor(floorNumber: number): number {
   const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
   if (floor) {
-    if (!floor.isButtonPressed()) {
+    if (!this.InvitedFloor(floorNumber)) {
       floor.toggleButtonState();
       return this.elevatorController.selectElevator(floorNumber);
     }
@@ -36,6 +36,11 @@ public associateElevatorToFloor(floorNumber: number): number {
     throw new Error(`Floor number ${floorNumber} not found`);
   }
   return -1;
+}
+
+public InvitedFloor(floorNumber: number): boolean {
+  const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
+  return floor!.isButtonPressed();
 }
 
   // Checks if all requests have been handled
@@ -52,7 +57,9 @@ public associateElevatorToFloor(floorNumber: number): number {
   public releaseFloor(floorNumber: number) {
     const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
     if (floor) {
+      setTimeout(() => {
         floor.toggleButtonState();
+      }, 2000)
     }
   }
   

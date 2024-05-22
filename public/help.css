@@ -138,10 +138,9 @@ html, body {
   min-height: 100vh;
   height: auto;
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-around;
   flex-wrap: nowrap;
   flex-direction: row-reverse;
-  align-content: flex-end;
   align-items: flex-end;
 }
 
@@ -151,4 +150,14 @@ html, body {
   flex-direction: row;
 }
 
-
+.mainBuilding {
+  position: relative;
+  width: auto;
+  min-height: 100vh;
+  height: auto;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: nowrap;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+}

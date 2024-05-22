@@ -6,6 +6,7 @@ class ElevatorApp {
   private buildingId: number;
   private building: Building;
   private buildingContainer: HTMLElement | null;
+  private buildingDiv: HTMLElement;
   private elevatorContainer: HTMLElement;
   private floorContainer: HTMLElement;
   private dingSound: HTMLAudioElement;
@@ -16,9 +17,11 @@ class ElevatorApp {
     this.buildingId = _buildingId;
     this.buildingContainer = document.getElementById("building-container");
 
+    this.buildingDiv = this.createElement("div", "mainBuilding");
     this.elevatorContainer = this.createElement("div", "elevators");
     this.floorContainer = this.createElement("div", "building");
 
+    this.buildingContainer?.appendChild(this.buildingDiv);
     this.appendToContainer(this.elevatorContainer);
     this.appendToContainer(this.floorContainer);
 
@@ -37,7 +40,7 @@ class ElevatorApp {
 
   // Appends an element to the building container
   private appendToContainer(element: HTMLElement): void {
-    this.buildingContainer?.appendChild(element);
+    this.buildingDiv.appendChild(element);
   }
 
   // Creates an audio element for the ding sound
@@ -75,9 +78,10 @@ class ElevatorApp {
     const floorStr = target.dataset.floor;
     if (floorStr) {
       const floorNumber = parseInt(floorStr);
-      this.building.associateElevatorToFloor(floorNumber);
+    if (!this.building.InvitedFloor(floorNumber)) {
       target.style.color = "green";
-
+    }
+      this.building.associateElevatorToFloor(floorNumber);
       if (!this.isSystemActive) {
         this.isSystemActive = true;
         this.monitorFloors();
