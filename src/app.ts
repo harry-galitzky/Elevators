@@ -3,6 +3,7 @@ import { config } from "./config";
 import "../public/help.css";
 
 class ElevatorApp {
+  private buildingId: number;
   private building: Building;
   private buildingContainer: HTMLElement | null;
   private elevatorContainer: HTMLElement;
@@ -10,8 +11,9 @@ class ElevatorApp {
   private dingSound: HTMLAudioElement;
   private isSystemActive: boolean = false;
 
-  constructor() {
-    this.building = new Building(config.numberOfFloors, config.numberOfElevators);
+  constructor(_building: Building, _buildingId: number) {
+    this.building = _building;
+    this.buildingId = _buildingId;
     this.buildingContainer = document.getElementById("building-container");
 
     this.elevatorContainer = this.createElement("div", "elevators");
@@ -24,8 +26,6 @@ class ElevatorApp {
 
     this.setupFloors();
     this.setupElevators();
-
-    this.addEventListeners();
   }
 
   // Creates an HTML element with a given tag and class name
@@ -56,7 +56,11 @@ class ElevatorApp {
       const buttonElement = this.createElement("div", "metal linear");
       buttonElement.textContent = `${floor.getNumber()}`;
       buttonElement.dataset.floor = `${floor.getNumber()}`;
+      buttonElement.dataset.buildingId = `${this.buildingId}`;
 
+      buttonElement.addEventListener("click", (e: Event) => this.handleFloorButtonClick(e));
+
+      floorElement.id = `${this.buildingId}`;
       floorElement.appendChild(buttonElement);
       this.floorContainer.appendChild(floorElement);
 
@@ -65,32 +69,28 @@ class ElevatorApp {
     });
   }
 
+  // Handles the click event for the floor buttons
+  private handleFloorButtonClick(e: Event): void {
+    const target = e.target as HTMLElement;
+    const floorStr = target.dataset.floor;
+    if (floorStr) {
+      const floorNumber = parseInt(floorStr);
+      this.building.associateElevatorToFloor(floorNumber);
+      target.style.color = "green";
+
+      if (!this.isSystemActive) {
+        this.isSystemActive = true;
+        this.monitorFloors();
+      }
+    }
+  }
+
   // Initializes the elevator elements
   private setupElevators(): void {
     this.building.getElevators().forEach((elevator) => {
       const elevatorElement = this.createElement("img", "elevator");
-      elevatorElement.id = `elevator-${elevator.elevatorId}`;
+      elevatorElement.id = `elevator-${elevator.elevatorId}-${this.buildingId}`;
       this.elevatorContainer.appendChild(elevatorElement);
-    });
-  }
-
-  // Adds event listeners to the floor buttons
-  private addEventListeners(): void {
-    document.querySelectorAll(".metal.linear").forEach((button) => {
-      button.addEventListener("click", (e: Event) => {
-        const target = e.target as HTMLElement;
-        const floorStr = target.dataset.floor;
-        if (floorStr) {
-          const floorNumber = parseInt(floorStr);
-          this.building.associateElevatorToFloor(floorNumber);
-          target.style.color = "green";
-
-          if (!this.isSystemActive) {
-            this.isSystemActive = true;
-            this.monitorFloors();
-          }
-        }
-      });
     });
   }
 
@@ -119,12 +119,12 @@ class ElevatorApp {
   // Moves the elevator to the next requested floor
   private moveElevatorToNextFloor(elevatorId: number, distance: number): void {
     const targetFloor = this.building.getNextRequestFloor(elevatorId);
-    const elevatorElement = document.getElementById(`elevator-${elevatorId}`);
+    const elevatorElement = document.getElementById(`elevator-${elevatorId}-${this.buildingId}`);
     if (elevatorElement !== null) {
       elevatorElement.style.transform = `translateY(${(-targetFloor + 1) * config.floorHeight}px)`;
       const time = distance * config.elevatorSpeed;
       elevatorElement.style.transition = `transform ${time}s ease`;
-      const floorButton = document.querySelector(`[data-floor="${targetFloor}"]`);
+      const floorButton = document.querySelector(`[data-floor="${targetFloor}"][data-building-id="${this.buildingId}"]`);
 
       setTimeout(() => {
         this.dingSound.currentTime = 0;
@@ -138,4 +138,6 @@ class ElevatorApp {
   }
 }
 
-new ElevatorApp();
+config.Buildings.forEach((config, index) => {
+  new ElevatorApp(new Building(config.numberOfFloors, config.numberOfElevators), index);
+});
