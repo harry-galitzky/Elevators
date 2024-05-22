@@ -60,7 +60,7 @@ export class Elevator {
     return this.elevatorId;
   }
 
-  // Adds a floor request to the queue
+  // Adds a floor request to the queue with added time
   public addRequestToQueue(floor: number, addedTime: number): void {
     this.timer += (addedTime + 2);
     this.pendingRequests.push(floor);

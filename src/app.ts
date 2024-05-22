@@ -78,9 +78,9 @@ class ElevatorApp {
     const floorStr = target.dataset.floor;
     if (floorStr) {
       const floorNumber = parseInt(floorStr);
-    if (!this.building.InvitedFloor(floorNumber)) {
-      target.style.color = "green";
-    }
+      if (!this.building.isFloorInvited(floorNumber)) {
+        target.style.color = "green";
+      }
       this.building.associateElevatorToFloor(floorNumber);
       if (!this.isSystemActive) {
         this.isSystemActive = true;
@@ -133,7 +133,7 @@ class ElevatorApp {
       setTimeout(() => {
         this.dingSound.currentTime = 0;
         this.dingSound.play();
-        this.building.releaseFloor(targetFloor)
+        this.building.releaseFloor(targetFloor);
         if (floorButton) {
           (floorButton as HTMLElement).style.color = 'hsla(0, 0%, 20%, 1)';
         }

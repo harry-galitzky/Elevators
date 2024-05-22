@@ -24,24 +24,25 @@ export class Building {
     return this.elevators;
   }
 
-// Associates an elevator to the requested floor
-public associateElevatorToFloor(floorNumber: number): number {
-  const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
-  if (floor) {
-    if (!this.InvitedFloor(floorNumber)) {
-      floor.toggleButtonState();
-      return this.elevatorController.selectElevator(floorNumber);
+  // Associates an elevator to the requested floor
+  public associateElevatorToFloor(floorNumber: number): number {
+    const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
+    if (floor) {
+      if (!this.isFloorInvited(floorNumber)) {
+        floor.toggleButtonState();
+        return this.elevatorController.selectElevator(floorNumber);
+      }
+    } else {
+      throw new Error(`Floor number ${floorNumber} not found`);
     }
-  } else {
-    throw new Error(`Floor number ${floorNumber} not found`);
+    return -1;
   }
-  return -1;
-}
 
-public InvitedFloor(floorNumber: number): boolean {
-  const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
-  return floor!.isButtonPressed();
-}
+  // Checks if a floor has already been invited
+  public isFloorInvited(floorNumber: number): boolean {
+    const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
+    return floor!.isButtonPressed();
+  }
 
   // Checks if all requests have been handled
   public areAllRequestsHandled(): boolean {
@@ -54,13 +55,13 @@ public InvitedFloor(floorNumber: number): boolean {
     return elevator ? elevator.processNextRequest() : -1;
   }
 
-  public releaseFloor(floorNumber: number) {
+  // Releases the floor button state after a delay
+  public releaseFloor(floorNumber: number): void {
     const floor = this.floors.find(floor => floor.getNumber() === floorNumber);
     if (floor) {
       setTimeout(() => {
         floor.toggleButtonState();
-      }, 2000)
+      }, 2000);
     }
   }
-  
 }
